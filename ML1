@@ -1,0 +1,18 @@
+import matplotlib.pyplot as plt
+import random
+import statistics
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+
+number_samples = random.randint(200, 500)
+random_state = random.randint(50, 200)
+number_clasters = 3
+X, y = make_blobs(n_samples = number_samples, random_state = random_state)
+y_pred = KMeans(n_clusters = number_clasters, random_state = random_state).fit_predict(X)
+print(statistics.fmean(y_pred))
+
+plt.figure(figsize = (8, 8))
+plt.subplot()
+plt.scatter(X[:, 0], X[:, 1], c = y_pred)
+plt.title("Кластеризація")
+plt.show()
