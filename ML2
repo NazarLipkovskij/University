@@ -1,0 +1,61 @@
+import random
+import numpy as np
+import datetime
+w, h = 100, 100
+M1 = [[random.uniform(0, 1) for x in range(w)] for y in range(h)]
+M2 = [[random.uniform(0, 1) for x in range(w)] for y in range(h)]
+V1 = [random.uniform(0, 1) for x in range(w)]
+V2 = [random.uniform(0, 1) for x in range(w)]
+
+# meme
+def py_matrixByMatrix(matrixA, matrixB):
+    return [[sum(matrixA[i][k] * matrixB[k][j]
+        for k in range(len(matrixB)))
+            for j in range(len(matrixB[0]))]
+                for i in range(len(matrixA))]
+
+def py_matrixByVector(matrixA, vector):
+    assert len(matrixA[0]) == len(vector)
+    result = []
+    for i in range(len(matrixA[0])):
+        total = 0
+        for j in range(len(vector)):
+            total += vector[j] * matrixA[j][i]
+        result.append(total)
+    return result
+
+def py_vectorByMatrix(matrixA, vector):
+    assert len(matrixA[0]) == len(vector)
+    result = []
+    for i in range(len(vector)):
+        total = 0
+        for j in range(len(matrixA[0])):
+            total += matrixA[j][i] * vector[j]
+        result.append(total)
+    return result
+
+def py_vectorByVector(vectorA, vectorB):
+    assert len(vectorA) == len(vectorB)
+    sum(vectorA[i] * vectorB[i] for i in range(len(vectorA)))
+    return sum(vectorA[i] * vectorB[i] for i in range(len(vectorA)))
+
+def calcDiff(methodName: str, pyDelegate, npDelegate, N, M):
+    pyStart = datetime.datetime.now()
+    pyRes = pyDelegate(N, M)
+    pyEnd = datetime.datetime.now()
+    pyTime = (pyEnd - pyStart).total_seconds() * 1000
+
+    nN = np.array(N)
+    nM = np.array(M)
+    npStart = datetime.datetime.now()
+    npRes = npDelegate(nN, nM)
+    npEnd = datetime.datetime.now()
+    npTime = (npEnd - npStart).total_seconds() * 1000
+
+    print(f"{methodName}: Час просто python: {pyTime:0.4f}, Час numpy: {npTime:0.4f}, Різниця: {pyTime-npTime:0.4f}")
+print(f"Ширина векторів та матриць: {w}")
+print(f"Висота матриць: {h}")
+calcDiff(methodName='Матриця на матрицю', pyDelegate=py_matrixByMatrix, npDelegate=np.matmul, N=M1, M=M2)
+calcDiff(methodName='Матриця на вектор', pyDelegate=py_matrixByVector, npDelegate=np.dot, N=M1, M=V1)
+calcDiff(methodName='Вектор на матрицю', pyDelegate=py_vectorByMatrix, npDelegate=np.dot, N=M1, M=V1)
+calcDiff(methodName='Вектор на вектор', pyDelegate=py_vectorByVector, npDelegate=np.dot, N=V1, M=V2)
